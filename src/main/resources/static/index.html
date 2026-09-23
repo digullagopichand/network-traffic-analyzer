@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Network Traffic Analyzer</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         body {
@@ -95,7 +96,37 @@
         </div>
 
     </div>
+    <h2>Protocol Statistics</h2>
 
+<div style="width: 500px; margin: 30px auto;">
+    <canvas id="protocolChart"></canvas>
+</div>
+
+
+    <h2>Packet Details</h2>
+
+<div id="packetDetails" style="
+    background: white;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+">
+    Click a packet from the table to view details.
+</div>
+<div style="margin-bottom: 15px;">
+    <input
+        type="text"
+        id="packetFilter"
+        placeholder="Search IP, protocol, or port..."
+        onkeyup="filterPackets()"
+        style="
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        "
+    >
+</div>
     <h2>Live Packets</h2>
 
     <table>
@@ -119,6 +150,30 @@
     <script>
 
         let socket;
+        let protocolChart;
+
+function createProtocolChart() {
+
+    let ctx = document
+        .getElementById("protocolChart")
+        .getContext("2d");
+
+    protocolChart = new Chart(ctx, {
+        type: "pie",
+
+        data: {
+            labels: ["TCP", "UDP", "Other"],
+
+            datasets: [{
+                data: [0, 0, 0]
+            }]
+        },
+
+        options: {
+            responsive: true
+        }
+    });
+}
 
         function startCapture() {
 
@@ -173,6 +228,9 @@
                 document.getElementById("packetTable");
 
             let row = table.insertRow(0);
+            row.onclick = function() {
+    showPacketDetails(packet);
+};
 
             row.insertCell(0).innerText =
                 packet.sourceIp;
@@ -192,6 +250,42 @@
             row.insertCell(5).innerText =
                 packet.packetSize;
         }
+        function filterPackets() {
+
+    let input =
+        document.getElementById("packetFilter")
+            .value
+            .toLowerCase();
+
+    let table =
+        document.getElementById("packetTable");
+
+    let rows = table.getElementsByTagName("tr");
+
+    for (let i = 0; i < rows.length; i++) {
+
+        let text =
+            rows[i].innerText.toLowerCase();
+
+        if (text.includes(input)) {
+            rows[i].style.display = "";
+        } else {
+            rows[i].style.display = "none";
+        }
+    }
+}
+
+        function showPacketDetails(packet) {
+
+    document.getElementById("packetDetails").innerHTML =
+
+        "<b>Source IP:</b> " + packet.sourceIp + "<br>" +
+        "<b>Destination IP:</b> " + packet.destinationIp + "<br>" +
+        "<b>Protocol:</b> " + packet.protocol + "<br>" +
+        "<b>Source Port:</b> " + packet.sourcePort + "<br>" +
+        "<b>Destination Port:</b> " + packet.destinationPort + "<br>" +
+        "<b>Packet Size:</b> " + packet.packetSize + " bytes";
+}
 
         function updateStats() {
 
@@ -211,8 +305,21 @@
                     document.getElementById("totalBytes")
                         .innerText = data.totalBytes;
                 });
+                let otherPackets =
+    data.totalPackets -
+    data.tcpPackets -
+    data.udpPackets;
+
+protocolChart.data.datasets[0].data = [
+    data.tcpPackets,
+    data.udpPackets,
+    otherPackets
+];
+
+protocolChart.update();
         }
 
+        createProtocolChart();
     </script>
 
 </body>
