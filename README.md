@@ -128,3 +128,59 @@ Allows users to select a packet and view its detailed information.
              ┌─────────┼─────────┐
              ▼         ▼         ▼
           Tables     Charts    Statistics
+
+🛠️ Technologies Used
+Backend
+Java
+Spring Boot
+Pcap4J
+REST API
+WebSocket
+Frontend
+HTML
+CSS
+JavaScript
+Chart.js
+Database
+
+SQLite or MongoDB may be used for storing packet history and analysis data.
+
+Development Tools
+VS Code / IntelliJ IDEA
+Git
+GitHub
+Maven
+📂 Planned Project Structure
+network-traffic-analyzer/
+│
+├── backend/
+│   ├── controller/
+│   ├── service/
+│   ├── analyzer/
+│   ├── model/
+│   └── config/
+│
+├── frontend/
+│   ├── index.html
+│   ├── css/
+│   └── js/
+│
+├── README.md
+└── pom.xml
+
+🔄 How the System Works
+The application starts network packet capture.
+Pcap4J captures packets from the selected network interface.
+Java analyzes each packet.
+Important packet information is extracted.
+The backend sends the analyzed data to the web dashboard.
+The dashboard updates packet information and statistics in real time.
+Charts visualize the network traffic.
+Users can inspect individual packet details.
+📊 Example Packet Information
+Source IP	Destination IP	Protocol	Source Port	Destination Port	Size
+192.168.1.10	142.250.x.x	TCP	52341	443	1280
+192.168.1.10	8.8.8.8	UDP	52120	53	74
+192.168.1.10	192.168.1.1	ICMP	-	-	98
+
+Actual values depend on the network traffic being captured.
