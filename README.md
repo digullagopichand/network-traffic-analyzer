@@ -1,4 +1,4 @@
-# 🌐 Web-Based Network Traffic Analyzer Using Java
+# 🌐  Network Traffic Analyzer
 
 <p align="center">
   <img src="https://img.shields.io/badge/Java-17%2B-orange?logo=openjdk" />
