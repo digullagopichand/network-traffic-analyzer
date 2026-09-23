@@ -2,6 +2,7 @@ package Network.Traffic.Analyzer;
 
 public class PacketInfo {
 
+    private String timestamp;
     private String sourceIp;
     private String destinationIp;
     private String protocol;
@@ -12,16 +13,25 @@ public class PacketInfo {
     public PacketInfo() {
     }
 
-    public PacketInfo(String sourceIp, String destinationIp,
-                      String protocol, int sourcePort,
-                      int destinationPort, int packetSize) {
+    public PacketInfo(String timestamp,
+                      String sourceIp,
+                      String destinationIp,
+                      String protocol,
+                      int sourcePort,
+                      int destinationPort,
+                      int packetSize) {
 
+        this.timestamp = timestamp;
         this.sourceIp = sourceIp;
         this.destinationIp = destinationIp;
         this.protocol = protocol;
         this.sourcePort = sourcePort;
         this.destinationPort = destinationPort;
         this.packetSize = packetSize;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
     }
 
     public String getSourceIp() {

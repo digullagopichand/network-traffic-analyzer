@@ -31,6 +31,7 @@ public class PacketWebSocketHandler extends TextWebSocketHandler {
         try {
 
             String json = "{"
+                    + "\"timestamp\":\"" + packet.getTimestamp() + "\","
                     + "\"sourceIp\":\"" + packet.getSourceIp() + "\","
                     + "\"destinationIp\":\"" + packet.getDestinationIp() + "\","
                     + "\"protocol\":\"" + packet.getProtocol() + "\","

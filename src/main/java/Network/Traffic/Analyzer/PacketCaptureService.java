@@ -117,14 +117,20 @@ public class PacketCaptureService {
                                         .valueAsInt();
                     }
 
-                    PacketInfo packetInfo = new PacketInfo(
-                            sourceIp,
-                            destinationIp,
-                            protocol,
-                            sourcePort,
-                            destinationPort,
-                            packet.length()
-                    );
+                    String timestamp =
+        java.time.LocalTime.now()
+                .withNano(0)
+                .toString();
+
+PacketInfo packetInfo = new PacketInfo(
+        timestamp,
+        sourceIp,
+        destinationIp,
+        protocol,
+        sourcePort,
+        destinationPort,
+        packet.length()
+);
 
                     packets.add(packetInfo);
 

@@ -133,6 +133,7 @@
 
         <thead>
             <tr>
+                <th>Time</th>
                 <th>Source IP</th>
                 <th>Destination IP</th>
                 <th>Protocol</th>
@@ -233,22 +234,25 @@ function createProtocolChart() {
 };
 
             row.insertCell(0).innerText =
-                packet.sourceIp;
+    packet.timestamp;
 
-            row.insertCell(1).innerText =
-                packet.destinationIp;
+row.insertCell(1).innerText =
+    packet.sourceIp;
 
-            row.insertCell(2).innerText =
-                packet.protocol;
+row.insertCell(2).innerText =
+    packet.destinationIp;
 
-            row.insertCell(3).innerText =
-                packet.sourcePort;
+row.insertCell(3).innerText =
+    packet.protocol;
 
-            row.insertCell(4).innerText =
-                packet.destinationPort;
+row.insertCell(4).innerText =
+    packet.sourcePort;
 
-            row.insertCell(5).innerText =
-                packet.packetSize;
+row.insertCell(5).innerText =
+    packet.destinationPort;
+
+row.insertCell(6).innerText =
+    packet.packetSize;
         }
         function filterPackets() {
 
