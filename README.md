@@ -1,4 +1,4 @@
-# 🌐  Network Traffic Analyzer
+# 🌐 Network Traffic Analyzer
 
 <p align="center">
   <img src="https://img.shields.io/badge/Java-17%2B-orange?logo=openjdk" />
@@ -13,14 +13,14 @@
 </p>
 
 <p align="center">
-A Java-based web application for real-time network packet capture, analysis, and visualization.
+  A Java-based web application for real-time network packet capture, analysis, and visualization.
 </p>
 
 ---
 
 ## 📌 Project Overview
 
-The **Web-Based Network Traffic Analyzer** is a Java-based web application designed to capture, analyze, and visualize network traffic in real time.
+The **Network Traffic Analyzer** is a Java-based web application designed to capture, analyze, and visualize network traffic in real time.
 
 The system captures network packets and extracts information such as source IP address, destination IP address, protocol, port numbers, packet size, and timestamp. This information is displayed through a web-based dashboard using tables, charts, and real-time updates.
 
@@ -128,59 +128,3 @@ Allows users to select a packet and view its detailed information.
              ┌─────────┼─────────┐
              ▼         ▼         ▼
           Tables     Charts    Statistics
-
-🛠️ Technologies Used
-Backend
-Java
-Spring Boot
-Pcap4J
-REST API
-WebSocket
-Frontend
-HTML
-CSS
-JavaScript
-Chart.js
-Database
-
-SQLite or MongoDB may be used for storing packet history and analysis data.
-
-Development Tools
-VS Code / IntelliJ IDEA
-Git
-GitHub
-Maven
-📂 Planned Project Structure
-network-traffic-analyzer/
-│
-├── backend/
-│   ├── controller/
-│   ├── service/
-│   ├── analyzer/
-│   ├── model/
-│   └── config/
-│
-├── frontend/
-│   ├── index.html
-│   ├── css/
-│   └── js/
-│
-├── README.md
-└── pom.xml
-
-🔄 How the System Works
-The application starts network packet capture.
-Pcap4J captures packets from the selected network interface.
-Java analyzes each packet.
-Important packet information is extracted.
-The backend sends the analyzed data to the web dashboard.
-The dashboard updates packet information and statistics in real time.
-Charts visualize the network traffic.
-Users can inspect individual packet details.
-📊 Example Packet Information
-Source IP	Destination IP	Protocol	Source Port	Destination Port	Size
-192.168.1.10	142.250.x.x	TCP	52341	443	1280
-192.168.1.10	8.8.8.8	UDP	52120	53	74
-192.168.1.10	192.168.1.1	ICMP	-	-	98
-
-Actual values depend on the network traffic being captured.
