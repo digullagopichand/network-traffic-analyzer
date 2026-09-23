@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Network Traffic Analyzer</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background: #f4f6f8;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .buttons {
+            text-align: center;
+            margin: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            width: 180px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        .card h2 {
+            margin: 5px;
+        }
+
+        table {
+            width: 100%;
+            background: white;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #222;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Network Traffic Analyzer</h1>
+
+    <div class="buttons">
+        <button onclick="startCapture()">Start Capture</button>
+        <button onclick="stopCapture()">Stop Capture</button>
+    </div>
+
+    <div class="stats">
+
+        <div class="card">
+            <h3>Total Packets</h3>
+            <h2 id="totalPackets">0</h2>
+        </div>
+
+        <div class="card">
+            <h3>TCP Packets</h3>
+            <h2 id="tcpPackets">0</h2>
+        </div>
+
+        <div class="card">
+            <h3>UDP Packets</h3>
+            <h2 id="udpPackets">0</h2>
+        </div>
+
+        <div class="card">
+            <h3>Total Bytes</h3>
+            <h2 id="totalBytes">0</h2>
+        </div>
+
+    </div>
+
+    <h2>Live Packets</h2>
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Source IP</th>
+                <th>Destination IP</th>
+                <th>Protocol</th>
+                <th>Source Port</th>
+                <th>Destination Port</th>
+                <th>Packet Size</th>
+            </tr>
+        </thead>
+
+        <tbody id="packetTable">
+        </tbody>
+
+    </table>
+
+    <script>
+
+        let socket;
+
+        function startCapture() {
+
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        return;
+    }
+
+    document.getElementById("packetTable").innerHTML = "";
+
+    fetch("/api/capture/start");
+
+    connectWebSocket();
+}
+
+        function stopCapture() {
+
+    fetch("/api/capture/stop");
+
+    if (socket) {
+        socket.close();
+        socket = null;
+    }
+}
+
+        function connectWebSocket() {
+
+            socket = new WebSocket(
+                "ws://" + window.location.host + "/ws/packets"
+            );
+
+            socket.onopen = function() {
+                console.log("WebSocket connected");
+            };
+
+            socket.onmessage = function(event) {
+
+                let packet = JSON.parse(event.data);
+
+                addPacket(packet);
+
+                updateStats();
+            };
+
+            socket.onclose = function() {
+                console.log("WebSocket disconnected");
+            };
+        }
+
+        function addPacket(packet) {
+
+            let table =
+                document.getElementById("packetTable");
+
+            let row = table.insertRow(0);
+
+            row.insertCell(0).innerText =
+                packet.sourceIp;
+
+            row.insertCell(1).innerText =
+                packet.destinationIp;
+
+            row.insertCell(2).innerText =
+                packet.protocol;
+
+            row.insertCell(3).innerText =
+                packet.sourcePort;
+
+            row.insertCell(4).innerText =
+                packet.destinationPort;
+
+            row.insertCell(5).innerText =
+                packet.packetSize;
+        }
+
+        function updateStats() {
+
+            fetch("/api/stats")
+                .then(response => response.json())
+                .then(data => {
+
+                    document.getElementById("totalPackets")
+                        .innerText = data.totalPackets;
+
+                    document.getElementById("tcpPackets")
+                        .innerText = data.tcpPackets;
+
+                    document.getElementById("udpPackets")
+                        .innerText = data.udpPackets;
+
+                    document.getElementById("totalBytes")
+                        .innerText = data.totalBytes;
+                });
+        }
+
+    </script>
+
+</body>
+</html>
