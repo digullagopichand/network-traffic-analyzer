@@ -449,6 +449,14 @@ Live Packet Table
 The WebSocket connection allows newly captured packets to appear on the dashboard without refreshing the webpage.
 
 ---
+## 🖥️ Dashboard Preview
+
+<p align="center">
+  <img src="docs/dashboard-preview.png" alt="Network Traffic Analyzer Dashboard" width="100%">
+</p>
+
+The dashboard provides real-time packet statistics, traffic visualization, protocol distribution, live packet monitoring, packet details, and CSV export.
+---
 
 ## 🔐 Notes
 
