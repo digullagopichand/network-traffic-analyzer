@@ -51,7 +51,7 @@ The analyzed packets are sent from the Spring Boot backend to a web dashboard us
 
 ## 🏗️ System Architecture
 
-```text
+
                     🌐 Network
                         │
                         ▼
@@ -84,13 +84,15 @@ The analyzed packets are sent from the Spring Boot backend to a web dashboard us
        📊 Charts    📋 Packets    🔍 Search
 
 
+
 ---
-✨ Features
+##✨ Features
 📡 Real-Time Packet Capture
 
 Captures live network packets from the network interface using Pcap4J and Npcap.
+---
 
-🔍 Packet Analysis
+##🔍 Packet Analysis
 
 The application extracts:
 
