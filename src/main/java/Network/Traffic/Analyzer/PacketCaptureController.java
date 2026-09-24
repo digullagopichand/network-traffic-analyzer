@@ -1,6 +1,8 @@
 package Network.Traffic.Analyzer;
 
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -74,5 +76,26 @@ public PacketStats getStats() {
             udpPackets,
             totalBytes
     );
+}
+@GetMapping("/api/traffic-over-time")
+public Map<String, Integer> getTrafficOverTime() {
+
+    Map<String, Integer> traffic = new HashMap<>();
+
+    List<PacketInfo> packets =
+            packetCaptureService.getPackets();
+
+    for (PacketInfo packet : packets) {
+
+        String time = packet.getTimestamp();
+
+        if (traffic.containsKey(time)) {
+            traffic.put(time, traffic.get(time) + 1);
+        } else {
+            traffic.put(time, 1);
+        }
+    }
+
+    return traffic;
 }
 }
