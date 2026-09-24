@@ -1,330 +1,1150 @@
 <!DOCTYPE html>
+
 <html>
+
 <head>
-    <title>Network Traffic Analyzer</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 30px;
-            background: #f4f6f8;
-        }
+```
+<title>Network Traffic Analyzer</title>
 
-        h1 {
-            text-align: center;
-        }
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-        .buttons {
-            text-align: center;
-            margin: 20px;
-        }
+<style>
 
-        button {
-            padding: 10px 20px;
-            margin: 5px;
-            cursor: pointer;
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background: #f4f6f8;
+        color: #222;
+    }
+
+    .container {
+        max-width: 1400px;
+        margin: auto;
+        padding: 20px;
+    }
+
+    /* HEADER */
+
+    .header {
+        background: #1f2937;
+        color: white;
+        padding: 22px;
+        border-radius: 10px;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    .header h1 {
+        margin: 0 0 6px 0;
+        font-size: 28px;
+    }
+
+    .header p {
+        margin: 0;
+        color: #cbd5e1;
+    }
+
+    /* CONTROLS */
+
+    .control-panel {
+        background: white;
+        padding: 12px 18px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .status {
+        font-weight: bold;
+    }
+
+    #statusText {
+        color: #16a34a;
+    }
+
+    .buttons {
+        display: flex;
+        gap: 8px;
+    }
+
+    button {
+        border: none;
+        padding: 9px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .start-btn {
+        background: #16a34a;
+        color: white;
+    }
+
+    .stop-btn {
+        background: #dc2626;
+        color: white;
+    }
+
+    .export-btn {
+        background: #2563eb;
+        color: white;
+    }
+
+    button:hover {
+        opacity: 0.85;
+    }
+
+    /* STATISTICS */
+
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-bottom: 15px;
+    }
+
+    .card {
+        background: white;
+        padding: 15px;
+        text-align: center;
+        border-radius: 10px;
+    }
+
+    .card h3 {
+        margin: 0 0 6px 0;
+        font-size: 14px;
+        color: #64748b;
+    }
+
+    .card h2 {
+        margin: 0;
+        font-size: 25px;
+    }
+
+    /* CHARTS */
+
+    .charts {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .chart-box {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+    .chart-box h2 {
+        margin: 0 0 10px 0;
+        font-size: 18px;
+    }
+
+    .traffic-chart {
+        height: 270px;
+    }
+
+    .protocol-chart {
+        height: 270px;
+        display: flex;
+        justify-content: center;
+    }
+
+    /* SEARCH */
+
+    .search-box {
+        background: white;
+        padding: 12px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
+
+    .search-box input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+
+    /* LIVE PACKETS */
+
+    .table-box {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 15px;
+    }
+
+    .table-title {
+        padding: 12px 15px;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .table-container {
+        overflow-x: auto;
+        max-height: 350px;
+        overflow-y: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th,
+    td {
+        padding: 9px;
+        border-bottom: 1px solid #e5e7eb;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    th {
+        background: #1f2937;
+        color: white;
+        position: sticky;
+        top: 0;
+    }
+
+    tbody tr {
+        cursor: pointer;
+    }
+
+    tbody tr:hover {
+        background: #f1f5f9;
+    }
+
+    /* PROTOCOL BADGES */
+
+    .protocol {
+        font-weight: bold;
+    }
+
+    /* PACKET DETAILS */
+
+    .details-box {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+    .details-box h2 {
+        margin: 0 0 10px 0;
+        font-size: 18px;
+    }
+
+    #packetDetails {
+        color: #475569;
+        line-height: 1.8;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 900px) {
+
+        .charts {
+            grid-template-columns: 1fr;
         }
 
         .stats {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin: 30px 0;
+            grid-template-columns: repeat(2, 1fr);
         }
 
-        .card {
-            background: white;
-            padding: 20px;
-            width: 180px;
-            text-align: center;
-            border-radius: 8px;
+        .control-panel {
+            flex-direction: column;
+            gap: 10px;
         }
+    }
 
-        .card h2 {
-            margin: 5px;
-        }
+    @media (max-width: 500px) {
 
-        table {
-            width: 100%;
-            background: white;
-            border-collapse: collapse;
-        }
-
-        th, td {
+        .container {
             padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
         }
 
-        th {
-            background: #222;
-            color: white;
+        .stats {
+            grid-template-columns: 1fr;
         }
-    </style>
+
+        .buttons {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .header h1 {
+            font-size: 22px;
+        }
+    }
+
+</style>
+```
+
 </head>
 
 <body>
 
-    <h1>Network Traffic Analyzer</h1>
+<div class="container">
+
+```
+<!-- HEADER -->
+
+<div class="header">
+
+    <h1>🌐 Network Traffic Analyzer</h1>
+
+    <p>Real-time Network Monitoring</p>
+
+</div>
+
+
+<!-- CONTROLS -->
+
+<div class="control-panel">
+
+    <div class="status">
+
+        ● Status:
+        <span id="statusText">Stopped</span>
+
+    </div>
 
     <div class="buttons">
-        <button onclick="startCapture()">Start Capture</button>
-        <button onclick="stopCapture()">Stop Capture</button>
+
+        <button
+            class="start-btn"
+            onclick="startCapture()">
+
+            ▶ Start Capture
+
+        </button>
+
+        <button
+            class="stop-btn"
+            onclick="stopCapture()">
+
+            ■ Stop Capture
+
+        </button>
+
+        <button
+            class="export-btn"
+            onclick="exportCSV()">
+
+            ↓ Export CSV
+
+        </button>
+
     </div>
 
-    <div class="stats">
-
-        <div class="card">
-            <h3>Total Packets</h3>
-            <h2 id="totalPackets">0</h2>
-        </div>
-
-        <div class="card">
-            <h3>TCP Packets</h3>
-            <h2 id="tcpPackets">0</h2>
-        </div>
-
-        <div class="card">
-            <h3>UDP Packets</h3>
-            <h2 id="udpPackets">0</h2>
-        </div>
-
-        <div class="card">
-            <h3>Total Bytes</h3>
-            <h2 id="totalBytes">0</h2>
-        </div>
-
-    </div>
-    <h2>Protocol Statistics</h2>
-
-<div style="width: 500px; margin: 30px auto;">
-    <canvas id="protocolChart"></canvas>
 </div>
 
 
-    <h2>Packet Details</h2>
+<!-- STATISTICS -->
 
-<div id="packetDetails" style="
-    background: white;
-    padding: 20px;
-    margin-bottom: 30px;
-    border-radius: 8px;
-">
-    Click a packet from the table to view details.
+<div class="stats">
+
+    <div class="card">
+
+        <h3>Total Packets</h3>
+
+        <h2 id="totalPackets">0</h2>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>TCP Packets</h3>
+
+        <h2 id="tcpPackets">0</h2>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>UDP Packets</h3>
+
+        <h2 id="udpPackets">0</h2>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>Total Bytes</h3>
+
+        <h2 id="totalBytes">0</h2>
+
+    </div>
+
 </div>
-<div style="margin-bottom: 15px;">
+
+
+<!-- CHARTS -->
+
+<div class="charts">
+
+
+    <!-- TRAFFIC CHART -->
+
+    <div class="chart-box">
+
+        <h2>📈 Traffic Over Time</h2>
+
+        <div class="traffic-chart">
+
+            <canvas id="trafficChart"></canvas>
+
+        </div>
+
+    </div>
+
+
+    <!-- PROTOCOL CHART -->
+
+    <div class="chart-box">
+
+        <h2>🥧 Protocol Distribution</h2>
+
+        <div class="protocol-chart">
+
+            <canvas id="protocolChart"></canvas>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- SEARCH -->
+
+<div class="search-box">
+
     <input
         type="text"
         id="packetFilter"
-        placeholder="Search IP, protocol, or port..."
-        onkeyup="filterPackets()"
-        style="
-            width: 300px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        "
-    >
+        placeholder="🔍 Search IP, protocol, or port..."
+        onkeyup="filterPackets()">
+
 </div>
-    <h2>Live Packets</h2>
 
-    <table>
 
-        <thead>
-            <tr>
-                <th>Time</th>
-                <th>Source IP</th>
-                <th>Destination IP</th>
-                <th>Protocol</th>
-                <th>Source Port</th>
-                <th>Destination Port</th>
-                <th>Packet Size</th>
-            </tr>
-        </thead>
+<!-- LIVE PACKETS -->
 
-        <tbody id="packetTable">
-        </tbody>
+<div class="table-box">
 
-    </table>
+    <div class="table-title">
 
-    <script>
+        Live Packets
 
-        let socket;
-        let protocolChart;
+    </div>
 
-function createProtocolChart() {
+    <div class="table-container">
 
-    let ctx = document
-        .getElementById("protocolChart")
-        .getContext("2d");
+        <table>
 
-    protocolChart = new Chart(ctx, {
-        type: "pie",
+            <thead>
+
+                <tr>
+
+                    <th>Time</th>
+
+                    <th>Source IP</th>
+
+                    <th>Destination IP</th>
+
+                    <th>Protocol</th>
+
+                    <th>Source Port</th>
+
+                    <th>Destination Port</th>
+
+                    <th>Packet Size</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="packetTable">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- PACKET DETAILS -->
+
+<div class="details-box">
+
+    <h2>Packet Details</h2>
+
+    <div id="packetDetails">
+
+        Click a packet from the table to view details.
+
+    </div>
+
+</div>
+```
+
+</div>
+
+<script>
+
+
+let socket;
+
+let protocolChart;
+
+let trafficChart;
+
+
+/* =========================
+   TRAFFIC CHART
+========================= */
+
+
+function createTrafficChart() {
+
+    let ctx =
+        document
+            .getElementById("trafficChart")
+            .getContext("2d");
+
+
+    trafficChart = new Chart(ctx, {
+
+        type: "line",
 
         data: {
-            labels: ["TCP", "UDP", "Other"],
+
+            labels: [],
 
             datasets: [{
-                data: [0, 0, 0]
+
+                label: "Packets",
+
+                data: [],
+
+                tension: 0.3,
+
+                fill: false
+
             }]
+
         },
 
         options: {
-            responsive: true
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            scales: {
+
+                x: {
+
+                    title: {
+
+                        display: true,
+
+                        text: "Time"
+
+                    }
+
+                },
+
+                y: {
+
+                    beginAtZero: true,
+
+                    title: {
+
+                        display: true,
+
+                        text: "Packets"
+
+                    }
+
+                }
+
+            }
+
         }
+
     });
+
 }
 
-        function startCapture() {
 
-    if (socket && socket.readyState === WebSocket.OPEN) {
+/* =========================
+   UPDATE TRAFFIC CHART
+========================= */
+
+
+function updateTrafficChart() {
+
+    fetch("/api/traffic-over-time")
+
+        .then(response => response.json())
+
+        .then(data => {
+
+            let times =
+                Object.keys(data);
+
+            let counts =
+                Object.values(data);
+
+
+            trafficChart.data.labels =
+                times;
+
+            trafficChart
+                .data
+                .datasets[0]
+                .data = counts;
+
+
+            trafficChart.update();
+
+        })
+
+        .catch(error => {
+
+            console.log(
+                "Traffic chart error:",
+                error
+            );
+
+        });
+
+}
+
+
+/* =========================
+   PROTOCOL CHART
+========================= */
+
+
+function createProtocolChart() {
+
+    let ctx =
+        document
+            .getElementById("protocolChart")
+            .getContext("2d");
+
+
+    protocolChart = new Chart(ctx, {
+
+        type: "pie",
+
+        data: {
+
+            labels: [
+                "TCP",
+                "UDP",
+                "Other"
+            ],
+
+            datasets: [{
+
+                data: [0, 0, 0]
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false
+
+        }
+
+    });
+
+}
+
+
+/* =========================
+   START CAPTURE
+========================= */
+
+
+function startCapture() {
+
+    if (
+        socket &&
+        socket.readyState === WebSocket.OPEN
+    ) {
+
         return;
+
     }
 
-    document.getElementById("packetTable").innerHTML = "";
+
+    document
+        .getElementById("packetTable")
+        .innerHTML = "";
+
 
     fetch("/api/capture/start");
 
+
     connectWebSocket();
+
+
+    document
+        .getElementById("statusText")
+        .innerText = "Capturing";
+
 }
 
-        function stopCapture() {
+
+/* =========================
+   STOP CAPTURE
+========================= */
+
+
+function stopCapture() {
 
     fetch("/api/capture/stop");
 
+
     if (socket) {
+
         socket.close();
+
         socket = null;
+
     }
+
+
+    document
+        .getElementById("statusText")
+        .innerText = "Stopped";
+
 }
 
-        function connectWebSocket() {
 
-            socket = new WebSocket(
-                "ws://" + window.location.host + "/ws/packets"
-            );
+/* =========================
+   WEBSOCKET
+========================= */
 
-            socket.onopen = function() {
-                console.log("WebSocket connected");
-            };
 
-            socket.onmessage = function(event) {
+function connectWebSocket() {
 
-                let packet = JSON.parse(event.data);
+    socket =
+        new WebSocket(
+            "ws://" +
+            window.location.host +
+            "/ws/packets"
+        );
 
-                addPacket(packet);
 
-                updateStats();
-            };
+    socket.onopen = function() {
 
-            socket.onclose = function() {
-                console.log("WebSocket disconnected");
-            };
-        }
+        console.log(
+            "WebSocket connected"
+        );
 
-        function addPacket(packet) {
+    };
 
-            let table =
-                document.getElementById("packetTable");
 
-            let row = table.insertRow(0);
-            row.onclick = function() {
-    showPacketDetails(packet);
-};
+    socket.onmessage = function(event) {
 
-            row.insertCell(0).innerText =
-    packet.timestamp;
+        let packet =
+            JSON.parse(event.data);
 
-row.insertCell(1).innerText =
-    packet.sourceIp;
 
-row.insertCell(2).innerText =
-    packet.destinationIp;
+        addPacket(packet);
 
-row.insertCell(3).innerText =
-    packet.protocol;
+        updateStats();
 
-row.insertCell(4).innerText =
-    packet.sourcePort;
+    };
 
-row.insertCell(5).innerText =
-    packet.destinationPort;
 
-row.insertCell(6).innerText =
-    packet.packetSize;
-        }
-        function filterPackets() {
+    socket.onclose = function() {
+
+        console.log(
+            "WebSocket disconnected"
+        );
+
+    };
+
+}
+
+
+/* =========================
+   ADD PACKET
+========================= */
+
+
+function addPacket(packet) {
+
+    let table =
+        document.getElementById(
+            "packetTable"
+        );
+
+
+    let row =
+        table.insertRow(0);
+
+
+    row.onclick = function() {
+
+        showPacketDetails(packet);
+
+    };
+
+
+    row.insertCell(0)
+        .innerText =
+        packet.timestamp;
+
+
+    row.insertCell(1)
+        .innerText =
+        packet.sourceIp;
+
+
+    row.insertCell(2)
+        .innerText =
+        packet.destinationIp;
+
+
+    row.insertCell(3)
+        .innerText =
+        packet.protocol;
+
+
+    row.insertCell(4)
+        .innerText =
+        packet.sourcePort;
+
+
+    row.insertCell(5)
+        .innerText =
+        packet.destinationPort;
+
+
+    row.insertCell(6)
+        .innerText =
+        packet.packetSize;
+
+}
+
+
+/* =========================
+   SEARCH / FILTER
+========================= */
+
+
+function filterPackets() {
 
     let input =
-        document.getElementById("packetFilter")
+        document
+            .getElementById(
+                "packetFilter"
+            )
             .value
             .toLowerCase();
 
+
     let table =
-        document.getElementById("packetTable");
+        document.getElementById(
+            "packetTable"
+        );
 
-    let rows = table.getElementsByTagName("tr");
 
-    for (let i = 0; i < rows.length; i++) {
+    let rows =
+        table.getElementsByTagName(
+            "tr"
+        );
+
+
+    for (
+        let i = 0;
+        i < rows.length;
+        i++
+    ) {
 
         let text =
-            rows[i].innerText.toLowerCase();
+            rows[i]
+                .innerText
+                .toLowerCase();
 
-        if (text.includes(input)) {
-            rows[i].style.display = "";
+
+        if (
+            text.includes(input)
+        ) {
+
+            rows[i].style.display =
+                "";
+
         } else {
-            rows[i].style.display = "none";
+
+            rows[i].style.display =
+                "none";
+
         }
+
     }
+
 }
 
-        function showPacketDetails(packet) {
 
-    document.getElementById("packetDetails").innerHTML =
+/* =========================
+   PACKET DETAILS
+========================= */
 
-        "<b>Source IP:</b> " + packet.sourceIp + "<br>" +
-        "<b>Destination IP:</b> " + packet.destinationIp + "<br>" +
-        "<b>Protocol:</b> " + packet.protocol + "<br>" +
-        "<b>Source Port:</b> " + packet.sourcePort + "<br>" +
-        "<b>Destination Port:</b> " + packet.destinationPort + "<br>" +
-        "<b>Packet Size:</b> " + packet.packetSize + " bytes";
+
+function showPacketDetails(packet) {
+
+    document
+        .getElementById(
+            "packetDetails"
+        )
+        .innerHTML =
+
+        "<b>Time:</b> " +
+        packet.timestamp +
+        "<br>" +
+
+        "<b>Source IP:</b> " +
+        packet.sourceIp +
+        "<br>" +
+
+        "<b>Destination IP:</b> " +
+        packet.destinationIp +
+        "<br>" +
+
+        "<b>Protocol:</b> " +
+        packet.protocol +
+        "<br>" +
+
+        "<b>Source Port:</b> " +
+        packet.sourcePort +
+        "<br>" +
+
+        "<b>Destination Port:</b> " +
+        packet.destinationPort +
+        "<br>" +
+
+        "<b>Packet Size:</b> " +
+        packet.packetSize +
+        " bytes";
+
 }
 
-        function updateStats() {
 
-            fetch("/api/stats")
-                .then(response => response.json())
-                .then(data => {
+/* =========================
+   UPDATE STATISTICS
+========================= */
 
-                    document.getElementById("totalPackets")
-                        .innerText = data.totalPackets;
 
-                    document.getElementById("tcpPackets")
-                        .innerText = data.tcpPackets;
+function updateStats() {
 
-                    document.getElementById("udpPackets")
-                        .innerText = data.udpPackets;
+    fetch("/api/stats")
 
-                    document.getElementById("totalBytes")
-                        .innerText = data.totalBytes;
-                });
-                let otherPackets =
-    data.totalPackets -
-    data.tcpPackets -
-    data.udpPackets;
+        .then(response =>
+            response.json()
+        )
 
-protocolChart.data.datasets[0].data = [
-    data.tcpPackets,
-    data.udpPackets,
-    otherPackets
-];
+        .then(data => {
 
-protocolChart.update();
+
+            document
+                .getElementById(
+                    "totalPackets"
+                )
+                .innerText =
+                data.totalPackets;
+
+
+            document
+                .getElementById(
+                    "tcpPackets"
+                )
+                .innerText =
+                data.tcpPackets;
+
+
+            document
+                .getElementById(
+                    "udpPackets"
+                )
+                .innerText =
+                data.udpPackets;
+
+
+            document
+                .getElementById(
+                    "totalBytes"
+                )
+                .innerText =
+                data.totalBytes;
+
+
+            /* PROTOCOL CHART */
+
+            let otherPackets =
+                data.totalPackets -
+                data.tcpPackets -
+                data.udpPackets;
+
+
+            protocolChart
+                .data
+                .datasets[0]
+                .data = [
+
+                    data.tcpPackets,
+
+                    data.udpPackets,
+
+                    otherPackets
+
+                ];
+
+
+            protocolChart.update();
+
+        })
+
+        .catch(error => {
+
+            console.log(
+                "Stats error:",
+                error
+            );
+
+        });
+
+}
+
+
+/* =========================
+   CSV EXPORT
+========================= */
+
+
+function exportCSV() {
+
+    let table =
+        document.querySelector(
+            "table"
+        );
+
+
+    let rows =
+        table.querySelectorAll(
+            "tr"
+        );
+
+
+    let csv = [];
+
+
+    for (let row of rows) {
+
+        let columns =
+            row.querySelectorAll(
+                "th, td"
+            );
+
+
+        let data = [];
+
+
+        for (let column of columns) {
+
+            data.push(
+                '"' +
+                column.innerText
+                    .replace(/"/g, '""') +
+                '"'
+            );
+
         }
 
-        createProtocolChart();
-    </script>
+
+        csv.push(
+            data.join(",")
+        );
+
+    }
+
+
+    let csvFile =
+        new Blob(
+            [csv.join("\n")],
+            {
+                type: "text/csv"
+            }
+        );
+
+
+    let downloadLink =
+        document.createElement("a");
+
+
+    downloadLink.href =
+        URL.createObjectURL(
+            csvFile
+        );
+
+
+    downloadLink.download =
+        "network-traffic.csv";
+
+
+    downloadLink.click();
+
+
+    URL.revokeObjectURL(
+        downloadLink.href
+    );
+
+}
+
+
+/* =========================
+   INITIALIZE
+========================= */
+
+
+createProtocolChart();
+
+createTrafficChart();
+
+setInterval(
+    updateTrafficChart,
+    1000
+);
+
+</script>
 
 </body>
+
 </html>
